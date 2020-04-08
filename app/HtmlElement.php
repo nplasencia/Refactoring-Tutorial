@@ -38,23 +38,35 @@ class HtmlElement
     public function open(): string
     {
         if ( ! empty($this->attributes)) {
-            $htmlAttributes = '';
-
-            foreach ($this->attributes as $key => $value) {
-                if (is_numeric($key)) {
-                    //For example: 'required'
-                    $htmlAttributes .= " $value";
-                } else {
-                    $htmlAttributes .= " $key=\"" . htmlentities($value, ENT_QUOTES, 'UTF-8') . "\"";
-                }
-            }
-
-            $result = "<{$this->name}$htmlAttributes>";
+            $result = "<{$this->name}{$this->attributes()}>";
         } else {
             $result = "<{$this->name}>";
         }
 
         return $result;
+    }
+
+    public function attributes(): string
+    {
+        $htmlAttributes = '';
+
+        foreach ($this->attributes as $key => $value) {
+            $htmlAttributes .= $this->renderAttribute($key, $value);
+        }
+
+        return $htmlAttributes;
+    }
+
+    protected function renderAttribute($key, $value)
+    {
+        if (is_numeric($key)) {
+            //For example: 'required'
+            $htmlAttributes = " $value";
+        } else {
+            $htmlAttributes = " $key=\"" . htmlentities($value, ENT_QUOTES, 'UTF-8') . "\"";
+        }
+
+        return $htmlAttributes;
     }
 
     public function isVoid(): bool
@@ -71,6 +83,5 @@ class HtmlElement
     {
         return "</{$this->name}>";
     }
-
 
 }
