@@ -37,17 +37,15 @@ class HtmlElement
 
     public function open(): string
     {
-        if ( ! empty($this->attributes)) {
-            $result = "<{$this->name}{$this->attributes()}>";
-        } else {
-            $result = "<{$this->name}>";
-        }
-
-        return $result;
+        return "<{$this->name}{$this->attributes()}>";
     }
 
     public function attributes(): string
     {
+        if (empty($this->attributes)) {
+            return '';
+        }
+
         $htmlAttributes = '';
 
         foreach ($this->attributes as $key => $value) {
@@ -61,12 +59,10 @@ class HtmlElement
     {
         if (is_numeric($key)) {
             //For example: 'required'
-            $htmlAttributes = " $value";
-        } else {
-            $htmlAttributes = " $key=\"" . htmlentities($value, ENT_QUOTES, 'UTF-8') . "\"";
+            return " $value";
         }
+        return " $key=\"" . htmlentities($value, ENT_QUOTES, 'UTF-8') . "\"";
 
-        return $htmlAttributes;
     }
 
     public function isVoid(): bool
