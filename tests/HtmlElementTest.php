@@ -7,6 +7,12 @@ use App\HtmlElement;
 class HtmlElementTest extends TestCase
 {
     /** @test */
+    function it_checks_if_an_element_is_void() {
+        $this->assertTrue((new HtmlElement('img'))->isVoid());
+        $this->assertFalse((new HtmlElement('p'))->isVoid());
+    }
+
+    /** @test */
     function it_generates_a_paragraph_with_content() {
 
         $htmlElement = new HtmlElement('p', [],'This is the content');

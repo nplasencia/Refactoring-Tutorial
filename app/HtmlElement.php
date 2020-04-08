@@ -22,7 +22,22 @@ class HtmlElement
 
     public function render()
     {
-        if (!empty($this->attributes)) {
+        $result = $this->open();
+
+        if ($this->isVoid()) {
+            return $result;
+        }
+
+        $result .= $this->contentEscaped();
+
+        $result .= $this->close();
+
+        return $result;
+    }
+
+    public function open(): string
+    {
+        if ( ! empty($this->attributes)) {
             $htmlAttributes = '';
 
             foreach ($this->attributes as $key => $value) {
@@ -30,7 +45,7 @@ class HtmlElement
                     //For example: 'required'
                     $htmlAttributes .= " $value";
                 } else {
-                    $htmlAttributes .= " $key=\"".htmlentities($value, ENT_QUOTES, 'UTF-8')."\"";
+                    $htmlAttributes .= " $key=\"" . htmlentities($value, ENT_QUOTES, 'UTF-8') . "\"";
                 }
             }
 
@@ -39,17 +54,23 @@ class HtmlElement
             $result = "<{$this->name}>";
         }
 
-        // If the element is void, we have to return
-        if (in_array($this->name, ['br', 'hr', 'img', 'input', 'meta'])) {
-            return $result;
-        }
-
-        //Print element content
-        $result .= htmlentities($this->content, ENT_QUOTES, 'UTF-8');
-
-        // Close the element
-        $result .= "</{$this->name}>";
-
         return $result;
     }
+
+    public function isVoid(): bool
+    {
+        return in_array($this->name, ['br', 'hr', 'img', 'input', 'meta']);
+    }
+
+    public function contentEscaped(): string
+    {
+        return htmlentities($this->content, ENT_QUOTES, 'UTF-8');
+    }
+
+    public function close(): string
+    {
+        return "</{$this->name}>";
+    }
+
+
 }
