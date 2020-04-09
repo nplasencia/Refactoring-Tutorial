@@ -22,17 +22,11 @@ class HtmlElement
 
     public function render()
     {
-        $result = $this->open();
-
         if ($this->isVoid()) {
-            return $result;
+            return $this->open();
         }
 
-        $result .= $this->contentEscaped();
-
-        $result .= $this->close();
-
-        return $result;
+        return $this->open().$this->contentEscaped().$this->close();
     }
 
     public function open(): string
@@ -42,26 +36,18 @@ class HtmlElement
 
     public function attributes(): string
     {
-        if (empty($this->attributes)) {
-            return '';
-        }
-
-        $htmlAttributes = '';
-
-        foreach ($this->attributes as $key => $value) {
-            $htmlAttributes .= $this->renderAttribute($key, $value);
-        }
-
-        return $htmlAttributes;
+        return array_reduce(array_keys($this->attributes), function($result, $key) {
+            return $result . $this->renderAttribute($key);
+        }, '');
     }
 
-    protected function renderAttribute($key, $value)
+    protected function renderAttribute($key)
     {
         if (is_numeric($key)) {
             //For example: 'required'
-            return " $value";
+            return " {$this->attributes[$key]}";
         }
-        return " $key=\"" . htmlentities($value, ENT_QUOTES, 'UTF-8') . "\"";
+        return " $key=\"" . htmlentities($this->attributes[$key], ENT_QUOTES, 'UTF-8') . "\"";
 
     }
 
